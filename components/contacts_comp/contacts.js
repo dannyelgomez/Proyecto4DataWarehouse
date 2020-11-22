@@ -1,82 +1,82 @@
 const sequelize = require('../../store/conexionMysql');
 
-const createContacts = async(req, res) => {
-    let { id, name, lastName, email, position, channel, interest } = req.body;
-    if (!id || !name || !lastName || !email || !position || !channel || !interest) return res.status(400).json('parametros mal enviados');
-    //validar si ya existe un contacto con los mismo datos
-    await sequelize.query(`SELECT * FROM contacts WHERE id=${id}`, {
-            type: sequelize.QueryTypes.SELECT,
-        })
-        .then(result => {
-            if (result == "") {
-                sequelize.query(`INSERT INTO contacts (id,name, lastName,email,position,channel,interest,companies_id)
-                  VALUES (${id},'${name}','${lastName}','${email}','${position}','${channel}',${interest},1)`)
-                    .then(response => {
-                        res.status(200).json('Número de contactos agregados: ' + response[1]);
-                    })
-                    .catch(err => {
-                        console.error(err);
-                    });
-            } else {
-                res.status(200).json('Ya existe un contacto');
-            }
-        })
+function is_numeric(value) {
+    return !isNaN(parseFloat(value)) && isFinite(value) ? value : !isNaN(parseFloat(value)) && isFinite(value);
+}
+
+const createContact = async(req, res) => {
+    let { name, lastName, email, position, channel, interest } = req.body;
+    if (!name || !lastName || !email || !position || !channel || !interest) {
+        res.status(400).json('Petición incompleta o equivocada');
+    } else {
+        await sequelize.query(`INSERT INTO contacts ( name, lastName, email, position, channel, interest ) 
+            VALUES ('${name}','${lastName}','${email}','${position}','${channel}','${interest}')`)
+            .then(response => {
+                res.status(200).json('El contacto ha sido creado');
+            }).catch(err => {
+                res.status(500).json('Error al crear el contacto');
+
+            });
+    }
+}
+
+const getContact = async(req, res) => {
+    let id = req.query.id;
+    if (!id || (id && !is_numeric(id))) {
+        res.status(400).json('Petición incompleta o equivocada');
+    } else {
+        await sequelize.query(`SELECT * FROM contacts WHERE contacts_id=${id}`, {
+                type: sequelize.QueryTypes.SELECT
+            })
+            .then(result => {
+                res.status(200).json(result);
+            }).catch(err => {
+                console.error(err);
+                console.log(err);
+                res.status(500).json('Error ejecutando el query');
+            });
+    }
 };
 
-const readContacts = async(req, res) => {
-    await sequelize.query(`SELECT * FROM contacts`, {
-            type: sequelize.QueryTypes.SELECT,
-        })
-        .then(result => {
-            if (result == "") {
-                res.status(404).json('No hay contactos');
-            } else {
-                res.status(200).json({ result });
-            }
-        })
-        .catch(err => {
-            console.error(err);
-        });
+const updateContact = async(req, res) => {
+    let id = req.query.id;
+    if (!id || (id && !is_numeric(id))) {
+        res.status(400).json('Petición incompleta o equivocada');
+    } else {
+        let { nit, name, phone, email, address } = req.body;
+        if (!nit || !name || !phone || !email || !address) {
+            res.status(400).json('Petición incompleta o equivocada');
+        } else {
+            await sequelize.query(`UPDATE contacts SET nit='${nit}', name='${name}', phone='${phone}', email='${email}', address='${address}'
+            WHERE contacts_id=${id}`)
+                .then(result => {
+                    res.status(200).json('Se ha actualizado correctamente');
+                }).catch(err => {
+                    console.log(err)
+                    res.status(500).json('Error ejecutando el query');
+                });
+
+        }
+    }
 };
 
-const updateContacts = async(req, res) => {
-    let { id, name, lastName, email, position, channel, interest } = req.body;
-    if (!id || !name || !lastName || !email || !position || !channel || !interest) return res.status(400).json('parametros mal enviados');
-
-    await sequelize.query(`UPDATE contacts 
-      SET name='${name}',lastName='${lastName}',email='${email}',position='${position}',channel='${channel}',interest=${interest}
-      WHERE id=${id}`)
-        .then(result => {
-            if (result[1] == 0) {
-                res.status(400).json('No pudo actualizar el contacto');
-            } else {
-                res.status(200).json('Número de contactos actualizados: ' + result[0].affectedRows);
-            }
-        })
-        .catch(err => {
-            console.error(err);
-        });
-};
-
-const deleteContacts = async(req, res, next) => {
-    let { id } = req.body;
-    if (!id) return res.status(400).json('parametros mal enviados');
-    await sequelize.query(`DELETE FROM contacts WHERE id=${id}`)
-        .then(result => {
-            if (result[1] != 0) {
-                res.status(200).json(`Contacto eliminado por id: ${id}`);
-            } else {
-                res.status(406).json(`No se puede eliminar contacto`);
-            }
-        })
-        .catch((err) => {
-            console.error(err);
-        });
+const deleteContact = async(req, res) => {
+    let id = req.query.id;
+    if (!id || (id && !is_numeric(id))) {
+        res.status(400).json('Petición incompleta o equivocada');
+    } else {
+        sequelize.query(`DELETE FROM contacts WHERE contacts_id =${id}`)
+            .then(resul => {
+                res.status(200).json('Usuario eliminado')
+            }).catch(err => {
+                res.status(500).json('Error ejecutando el query');
+            })
+    }
 };
 
 module.exports = {
-    createContacts,
-    readContacts,
-    updateContacts,
-    deleteContacts
+    createContact,
+    getContact,
+    updateContact,
+    deleteContact
 }
