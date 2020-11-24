@@ -117,5 +117,3 @@ INSERT INTO
   users
 VALUES
   (NULL,"daniel","danny123","Daniel", "Gómez","danny57@gmail.com",3007243432,"Cra 14 # 8-12",TRUE,FALSE)
-  
-  
