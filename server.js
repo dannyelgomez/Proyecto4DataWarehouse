@@ -11,7 +11,7 @@ const router = express.Router();
 app.use(router);
 
 router.use('/users', usersRouter);
-router.use('/', companiesRouter);
+router.use('/companies', companiesRouter);
 router.use('/', contactsRouter);
 
 

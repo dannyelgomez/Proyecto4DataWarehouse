@@ -1,4 +1,3 @@
-/* const { is_numeric } = require('./index'); */
 const sequelize = require('../../store/conexionMysql');
 
 function is_numeric(value) {
