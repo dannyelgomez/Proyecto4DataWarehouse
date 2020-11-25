@@ -12,7 +12,7 @@ app.use(router);
 
 router.use('/users', usersRouter);
 router.use('/companies', companiesRouter);
-router.use('/', contactsRouter);
+router.use('/contacts', contactsRouter);
 
 
 app.listen(3000, function() {

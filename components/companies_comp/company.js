@@ -46,7 +46,7 @@ const createCompany = async(req, res) => {
 }
 
 const getCompanyById = async(req, res) => {
-    let id = req.query.id;
+    let id = req.params.id;
     await sequelize.query(`SELECT * FROM companies WHERE companies_id=${id}`, {
             type: sequelize.QueryTypes.SELECT
         })

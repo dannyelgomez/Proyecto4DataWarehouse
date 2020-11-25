@@ -46,7 +46,7 @@ const createUser = async(req, res) => {
 }
 
 const getUserById = async(req, res) => {
-    let id = req.query.id;
+    let id = req.params.id;
     await sequelize.query(`SELECT * FROM users WHERE user_id=${id}`, {
             type: sequelize.QueryTypes.SELECT
         })
