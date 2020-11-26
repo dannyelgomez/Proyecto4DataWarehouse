@@ -5,6 +5,7 @@ const usersRouter = require('./components/users_comp');
 const companiesRouter = require('./components/companies_comp');
 const contactsRouter = require('./components/contacts_comp');
 const regionsRouter = require('./components/regions_comp');
+const countriesRouter = require('./components/countries_comp');
 
 
 app.use(express.json());
@@ -16,6 +17,7 @@ router.use('/users', usersRouter);
 router.use('/companies', companiesRouter);
 router.use('/contacts', contactsRouter);
 router.use('/regions', regionsRouter);
+router.use('/countries', countriesRouter);
 
 
 app.listen(3000, function() {
