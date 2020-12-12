@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 const usersRouter = require('./components/users_comp');
@@ -11,6 +12,7 @@ const citiesRouter = require('./components/cities_comp');
 app.use(express.json());
 const router = express.Router();
 
+app.use(cors());
 app.use(router);
 
 router.use('/users', usersRouter);
